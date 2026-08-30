@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WINTER ARC</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#070b12">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Winter Arc">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070b12;
+  --bg2:#0c1220;
+  --card:#101928;
+  --card2:#0c1420;
+  --border:#1c2a3d;
+  --border-soft:#152131;
+  --ice:#6fd6ff;
+  --ice2:#a9ecff;
+  --ice-dim:#254057;
+  --frost:#eef6fc;
+  --frost-dim:#8ea0b5;
+  --frost-faint:#54677c;
+  --mint:#5fe3ac;
+  --danger:#ff6b6b;
+  --amber:#ffc266;
+  --radius:14px;
+  --radius-sm:9px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #0e1a2b 0%, var(--bg) 55%),
+    var(--bg);
+  color:var(--frost);
+  font-family:'Inter',sans-serif;
+  overscroll-behavior:none;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+}
+#app{
+  width:100%;
+  max-width:520px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  isolation:isolate;
+}
+#snow{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.55;}
+
+/* ---------- Header ---------- */
+header.topbar{
+  position:relative; z-index:2;
+  padding:18px 18px 10px;
+  display:flex; flex-direction:column; gap:2px;
+}
+.brand{
+  font-family:'Oswald',sans-serif;
+  font-weight:700;
+  font-size:22px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--frost);
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+}
+.brand .dot{color:var(--ice); text-shadow:0 0 12px rgba(111,214,255,.7);}
+.brand-sub{
+  font-size:10.5px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--frost-faint);
+  font-family:'JetBrains Mono',monospace;
+}
+.datebar{
+  margin-top:12px;
+  display:flex; align-items:center; justify-content:space-between;
+  background:linear-gradient(180deg, var(--card), var(--card2));
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:8px 6px;
+}
+.datebar button{
+  background:none; border:none; color:var(--ice); font-size:18px;
+  width:38px; height:34px; border-radius:8px; cursor:pointer;
+  font-family:'JetBrains Mono',monospace;
+}
+.datebar button:active{background:var(--ice-dim);}
+.datebar .datelabel{
+  font-family:'Oswald',sans-serif;
+  font-weight:500;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  font-size:13.5px;
+  color:var(--frost);
+  text-align:center;
+  flex:1;
+}
+.datebar .today-pill{
+  font-size:9.5px; color:var(--ice); font-family:'JetBrains Mono',monospace;
+  display:block; margin-top:1px; letter-spacing:1px;
+}
+
+/* ---------- Main content ---------- */
+main#view{
+  position:relative; z-index:1;
+  flex:1;
+  padding:14px 16px 100px;
+  overflow-y:auto;
+}
+.section-title{
+  font-family:'Oswald',sans-serif;
+  font-weight:600;
+  font-size:13px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--frost-dim);
+  margin:22px 2px 10px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.section-title:first-child{margin-top:4px;}
+.section-title .manage-link{
+  font-family:'Inter',sans-serif; font-weight:600; font-size:11.5px;
+  letter-spacing:.3px; text-transform:none; color:var(--ice); cursor:pointer;
+}
+
+.card{
+  background:linear-gradient(165deg, var(--card), var(--card2));
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px;
+  margin-bottom:12px;
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:"";
+  position:absolute; top:-40%; right:-20%;
+  width:140px; height:140px;
+  background:radial-gradient(circle, rgba(111,214,255,.10), transparent 70%);
+  pointer-events:none;
+}
+.card-row{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.card-title{font-weight:600; font-size:14.5px; color:var(--frost);}
+.card-sub{font-size:12px; color:var(--frost-dim); margin-top:2px;}
+
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+
+/* stat tile */
+.stat{
+  background:linear-gradient(165deg, var(--card), var(--card2));
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  padding:13px;
+}
+.stat .num{
+  font-family:'Oswald',sans-serif; font-size:26px; font-weight:600; color:var(--ice2);
+  text-shadow:0 0 14px rgba(111,214,255,.25);
+  line-height:1.1;
+}
+.stat .lbl{font-size:10.5px; letter-spacing:1px; text-transform:uppercase; color:var(--frost-faint); margin-top:4px;}
+
+/* buttons */
+.btn{
+  font-family:'Inter',sans-serif; font-weight:600; font-size:13.5px;
+  border-radius:10px; border:1px solid var(--border);
+  background:var(--card2); color:var(--frost);
+  padding:10px 14px; cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+}
+.btn:active{transform:scale(.97);}
+.btn-primary{
+  background:linear-gradient(135deg, var(--ice), #4bb3e0);
+  color:#04141f; border:none; font-weight:700;
+  box-shadow:0 4px 18px rgba(111,214,255,.25);
+}
+.btn-ghost{background:transparent; border:1px dashed var(--border);}
+.btn-danger{background:rgba(255,107,107,.12); border:1px solid rgba(255,107,107,.35); color:var(--danger);}
+.btn-block{width:100%;}
+.btn-sm{padding:7px 10px; font-size:12px; border-radius:8px;}
+.icon-btn{
+  background:var(--card2); border:1px solid var(--border); color:var(--frost-dim);
+  width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  font-size:15px;
+}
+.icon-btn:active{transform:scale(.94);}
+
+/* list items */
+.list-item{
+  display:flex; align-items:center; gap:10px;
+  padding:11px 4px; border-bottom:1px solid var(--border-soft);
+}
+.list-item:last-child{border-bottom:none;}
+.check{
+  width:24px; height:24px; border-radius:7px; border:1.5px solid var(--frost-faint);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none;
+  font-size:14px; color:transparent;
+}
+.check.on{background:linear-gradient(135deg,var(--ice),#4bb3e0); border-color:transparent; color:#04141f;}
+.li-text{flex:1; font-size:14px; color:var(--frost);}
+.li-text.done{color:var(--frost-faint); text-decoration:line-through;}
+.li-sub{font-size:11px; color:var(--frost-faint); margin-top:1px;}
+.li-del{color:var(--frost-faint); cursor:pointer; font-size:16px; padding:4px 6px;}
+
+.empty-state{
+  text-align:center; padding:30px 12px; color:var(--frost-faint); font-size:13px;
+  border:1px dashed var(--border); border-radius:var(--radius);
+}
+.empty-state .big{font-size:26px; display:block; margin-bottom:6px;}
+
+/* forms */
+.field{margin-bottom:12px;}
+.field label{
+  display:block; font-size:11px; letter-spacing:1px; text-transform:uppercase;
+  color:var(--frost-faint); margin-bottom:6px; font-family:'JetBrains Mono',monospace;
+}
+.field input[type=text], .field input[type=number], .field input[type=time], .field textarea, .field select{
+  width:100%; background:var(--bg2); border:1px solid var(--border); border-radius:9px;
+  padding:11px 12px; color:var(--frost); font-size:14.5px; font-family:'Inter',sans-serif;
+}
+.field textarea{resize:vertical; min-height:60px;}
+.field-row{display:flex; gap:10px;}
+.field-row .field{flex:1;}
+.chip-row{display:flex; flex-wrap:wrap; gap:8px;}
+.chip{
+  padding:8px 13px; border-radius:20px; border:1px solid var(--border); background:var(--card2);
+  font-size:12.5px; color:var(--frost-dim); cursor:pointer;
+}
+.chip.on{background:rgba(111,214,255,.14); border-color:var(--ice); color:var(--ice2);}
+
+/* modal */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(3,7,13,.72); backdrop-filter:blur(3px);
+  z-index:50; display:flex; align-items:flex-end; justify-content:center;
+}
+.modal-overlay.center{align-items:center; padding:20px;}
+.modal{
+  width:100%; max-width:520px; background:linear-gradient(180deg, #101a2a, #0a1220);
+  border:1px solid var(--border); border-bottom:none;
+  border-radius:20px 20px 0 0; padding:18px 18px calc(env(safe-area-inset-bottom,0px) + 18px);
+  max-height:88vh; overflow-y:auto;
+  animation:slideup .18s ease-out;
+}
+.modal-overlay.center .modal{border-radius:18px; border-bottom:1px solid var(--border); animation:popin .15s ease-out;}
+@keyframes slideup{from{transform:translateY(24px); opacity:.4;} to{transform:translateY(0); opacity:1;}}
+@keyframes popin{from{transform:scale(.96); opacity:0;} to{transform:scale(1); opacity:1;}}
+.modal-handle{width:38px; height:4px; background:var(--border); border-radius:3px; margin:0 auto 14px;}
+.modal-title{font-family:'Oswald',sans-serif; font-weight:600; font-size:16px; letter-spacing:1px; text-transform:uppercase; margin-bottom:14px;}
+.modal-close{position:absolute; top:14px; right:16px; color:var(--frost-faint); font-size:20px; cursor:pointer;}
+
+/* progress ring */
+.ring-wrap{position:relative; width:96px; height:96px; flex:none;}
+.ring-num{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+.ring-num .n{font-family:'Oswald',sans-serif; font-size:22px; font-weight:600; color:var(--ice2);}
+.ring-num .l{font-size:8.5px; letter-spacing:1px; text-transform:uppercase; color:var(--frost-faint); margin-top:1px;}
+
+/* macro bars */
+.macro{margin-bottom:9px;}
+.macro-top{display:flex; justify-content:space-between; font-size:11.5px; color:var(--frost-dim); margin-bottom:4px;}
+.macro-track{height:6px; border-radius:4px; background:var(--bg2); overflow:hidden;}
+.macro-fill{height:100%; border-radius:4px;}
+
+/* water glasses */
+.glass-row{display:flex; flex-wrap:wrap; gap:9px; margin:12px 0 4px;}
+.glass{
+  width:34px; height:42px; border-radius:4px 4px 8px 8px; border:2px solid var(--ice-dim);
+  background:var(--bg2); cursor:pointer; position:relative; flex:none;
+}
+.glass.filled{background:linear-gradient(180deg, transparent 8%, rgba(111,214,255,.55) 8%); border-color:var(--ice);}
+
+/* nav */
+nav.bottomnav{
+  position:fixed; z-index:5; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:520px;
+  background:linear-gradient(180deg, rgba(10,16,26,.85), rgba(6,10,18,.98));
+  border-top:1px solid var(--border);
+  backdrop-filter:blur(10px);
+  display:flex; padding:8px 4px calc(env(safe-area-inset-bottom,0px) + 6px);
+}
+.navbtn{
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+  background:none; border:none; color:var(--frost-faint); padding:6px 0; cursor:pointer;
+}
+.navbtn .ic{font-size:19px;}
+.navbtn .lb{font-size:9.5px; letter-spacing:.5px; text-transform:uppercase; font-family:'JetBrains Mono',monospace;}
+.navbtn.active{color:var(--ice);}
+.navbtn.active .ic{filter:drop-shadow(0 0 6px rgba(111,214,255,.7));}
+
+/* misc */
+.streak-flame{color:var(--ice2); text-shadow:0 0 10px rgba(111,214,255,.6);}
+.tag{display:inline-block; font-size:10px; padding:3px 8px; border-radius:20px; background:var(--ice-dim); color:var(--ice2); letter-spacing:.5px;}
+.tag.danger{background:rgba(255,107,107,.15); color:var(--danger);}
+.tag.mint{background:rgba(95,227,172,.15); color:var(--mint);}
+.divider{height:1px; background:var(--border-soft); margin:14px 0;}
+.hint{font-size:11.5px; color:var(--frost-faint); line-height:1.5;}
+.spinner{
+  width:26px; height:26px; border-radius:50%; border:3px solid var(--ice-dim); border-top-color:var(--ice);
+  animation:spin .8s linear infinite; margin:0 auto;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.center-col{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:24px 0;}
+.timer-display{
+  font-family:'Oswald',sans-serif; font-size:58px; font-weight:600; letter-spacing:2px;
+  text-align:center; color:var(--ice2); text-shadow:0 0 22px rgba(111,214,255,.35); margin:18px 0 6px;
+}
+.photo-preview{width:100%; max-height:220px; object-fit:cover; border-radius:12px; margin-bottom:12px; border:1px solid var(--border);}
+::-webkit-scrollbar{width:0; height:0;}
+</style>
+</head>
+<body>
+<canvas id="snow"></canvas>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">WINTER<span class="dot">.</span>ARC</div>
+    <div class="brand-sub">DISIPLINË PËR 90 DITË</div>
+    <div class="datebar">
+      <button data-action="date-prev">‹</button>
+      <div class="datelabel" id="dateLabel">—
+        <span class="today-pill" id="todayPill"></span>
+      </div>
+      <button data-action="date-next">›</button>
+    </div>
+  </header>
+  <main id="view"></main>
+  <nav class="bottomnav" id="bottomnav">
+    <button class="navbtn" data-tab="dashboard"><span class="ic">🏠</span><span class="lb">Ballina</span></button>
+    <button class="navbtn" data-tab="food"><span class="ic">🍽️</span><span class="lb">Ushqimi</span></button>
+    <button class="navbtn" data-tab="body"><span class="ic">💧</span><span class="lb">Trupi</span></button>
+    <button class="navbtn" data-tab="discipline"><span class="ic">✅</span><span class="lb">Disiplina</span></button>
+    <button class="navbtn" data-tab="tools"><span class="ic">🛠️</span><span class="lb">Mjetet</span></button>
+  </nav>
+</div>
+<div id="modalRoot"></div>
+<script>
+/* ================= STORAGE HELPERS ================= */
+async function sGet(key){
+  try{ const r = await window.storage.get(key, false); return r ? JSON.parse(r.value) : null; }
+  catch(e){ return null; }
+}
+async function sSet(key, val){
+  try{ await window.storage.set(key, JSON.stringify(val), false); return true; }
+  catch(e){ console.error('storage set failed', key, e); return false; }
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+/* ================= DATE HELPERS ================= */
+const ALB_DAYS = ['Diel','Hënë','Martë','Mërkurë','Enjte','Premte','Shtunë'];
+const ALB_MONTHS = ['Janar','Shkurt','Mars','Prill','Maj','Qershor','Korrik','Gusht','Shtator','Tetor','Nëntor','Dhjetor'];
+function fmtDate(d){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function todayStr(){ return fmtDate(new Date()); }
+function dateFromStr(ds){ const [y,m,d]=ds.split('-').map(Number); return new Date(y,m-1,d); }
+function displayDate(ds){
+  const dt = dateFromStr(ds);
+  return `${ALB_DAYS[dt.getDay()]}, ${dt.getDate()} ${ALB_MONTHS[dt.getMonth()]}`;
+}
+function shiftDate(ds, delta){
+  const dt = dateFromStr(ds);
+  dt.setDate(dt.getDate()+delta);
+  return fmtDate(dt);
+}
+
+/* ================= GLOBAL STATE ================= */
+let currentDate = todayStr();
+let activeTab = 'dashboard';
+
+/* ================= SNOWFALL BACKGROUND ================= */
+(function snow(){
+  const canvas = document.getElementById('snow');
+  const ctx = canvas.getContext('2d');
+  let w,h,flakes;
+  function size(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  function init(){
+    size();
+    const count = Math.floor((w*h)/28000);
+    flakes = Array.from({length: Math.max(18, Math.min(count,45))}, ()=>({
+      x: Math.random()*w, y: Math.random()*h,
+      r: Math.random()*2 + .6,
+      s: Math.random()*.6 + .15,
+      d: Math.random()*1 - .5
+    }));
+  }
+  function tick(){
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = 'rgba(169,236,255,0.75)';
+    for(const f of flakes){
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+      ctx.fill();
+      f.y += f.s; f.x += f.d;
+      if(f.y > h){ f.y = -4; f.x = Math.random()*w; }
+      if(f.x > w) f.x = 0;
+      if(f.x < 0) f.x = w;
+    }
+    requestAnimationFrame(tick);
+  }
+  window.addEventListener('resize', size);
+  init(); tick();
+})();
+
+/* ================= MODAL SYSTEM ================= */
+function openModal(innerHtml, opts={}){
+  const root = document.getElementById('modalRoot');
+  const centered = opts.center ? 'center' : '';
+  root.innerHTML = `
+    <div class="modal-overlay ${centered}" data-action="modal-backdrop">
+      <div class="modal" data-stop="1">
+        <span class="modal-close" data-action="modal-close">✕</span>
+        ${opts.title ? `<div class="modal-handle"></div><div class="modal-title">${opts.title}</div>` : '<div class="modal-handle"></div>'}
+        ${innerHtml}
+      </div>
+    </div>`;
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML = ''; }
+document.getElementById('modalRoot').addEventListener('click', (e)=>{
+  if(e.target.dataset.action === 'modal-backdrop' || e.target.dataset.action === 'modal-close') closeModal();
+});
+
+/* ================= DATA MODEL ================= */
+const DEFAULT_CONFIG = { habits: [], morningSteps: [], looksSteps: [], reminders: [], pornStart: null };
+let _cfgCache = null;
+async function getConfig(){
+  let c = await sGet('config');
+  let changed = false;
+  if(!c){ c = JSON.parse(JSON.stringify(DEFAULT_CONFIG)); changed = true; }
+  if(!c.habits) c.habits = [];
+  if(!c.morningSteps) c.morningSteps = [];
+  if(!c.looksSteps) c.looksSteps = [];
+  if(!c.reminders) c.reminders = [];
+  if(!c.pornStart){ c.pornStart = todayStr(); changed = true; }
+  if(changed) await sSet('config', c);
+  _cfgCache = c;
+  return c;
+}
+async function saveConfig(c){ _cfgCache = c; await sSet('config', c); }
+
+function defaultDay(){
+  return {
+    water: 0,
+    sleep: { bed:'', wake:'', notes:'' },
+    porn: { relapsed:false, note:'' },
+    habitLog: {},
+    morningLog: {},
+    looksLog: {},
+    workout: { sessions:[] }
+  };
+}
+async function getDayRaw(ds){ return await sGet('day:'+ds); }
+async function getDay(ds){
+  const d = await getDayRaw(ds);
+  const base = defaultDay();
+  if(!d) return base;
+  return {
+    water: typeof d.water==='number' ? d.water : 0,
+    sleep: { ...base.sleep, ...(d.sleep||{}) },
+    porn: { ...base.porn, ...(d.porn||{}) },
+    habitLog: d.habitLog || {},
+    morningLog: d.morningLog || {},
+    looksLog: d.looksLog || {},
+    workout: { sessions: (d.workout && d.workout.sessions) || [] }
+  };
+}
+async function saveDay(ds, obj){ await sSet('day:'+ds, obj); }
+
+function defaultFood(){ return { breakfast:[], lunch:[], dinner:[], snack:[] }; }
+async function getFood(ds){
+  const f = await sGet('food:'+ds);
+  const base = defaultFood();
+  if(!f) return base;
+  return { breakfast:f.breakfast||[], lunch:f.lunch||[], dinner:f.dinner||[], snack:f.snack||[] };
+}
+async function saveFood(ds, obj){ await sSet('food:'+ds, obj); }
+
+async function getTodos(){ const t = await sGet('todos'); return t || []; }
+async function saveTodos(t){ await sSet('todos', t); }
+
+/* ---- streaks ---- */
+async function pornStreak(cfg){
+  let d = new Date();
+  let count = 0;
+  let guard = 0;
+  while(guard < 3650){
+    guard++;
+    const ds = fmtDate(d);
+    const day = await getDayRaw(ds);
+    if(day && day.porn && day.porn.relapsed) break;
+    count++;
+    if(ds <= cfg.pornStart) break;
+    d.setDate(d.getDate()-1);
+  }
+  return count;
+}
+async function doneStreak(checkFn){
+  let d = new Date();
+  let count = 0;
+  let isToday = true;
+  let guard = 0;
+  while(guard < 3650){
+    guard++;
+    const ds = fmtDate(d);
+    const day = await getDayRaw(ds);
+    const ok = day && checkFn(day);
+    if(!ok){
+      if(isToday){ isToday=false; d.setDate(d.getDate()-1); continue; }
+      break;
+    }
+    count++; isToday=false;
+    d.setDate(d.getDate()-1);
+  }
+  return count;
+}
+function mealTotals(food){
+  const all = [...food.breakfast, ...food.lunch, ...food.dinner, ...food.snack];
+  return all.reduce((acc,i)=>{
+    acc.cal += Number(i.calories)||0;
+    acc.protein += Number(i.protein_g)||0;
+    acc.carbs += Number(i.carbs_g)||0;
+    acc.fat += Number(i.fat_g)||0;
+    return acc;
+  }, {cal:0, protein:0, carbs:0, fat:0});
+}
+
+/* ================= ROUTER ================= */
+const TAB_RENDERERS = {}; // filled below by each module
+function updateDateBar(){
+  document.getElementById('dateLabel').innerHTML = displayDate(currentDate) + `<span class="today-pill" id="todayPill"></span>`;
+  document.getElementById('todayPill').textContent = currentDate === todayStr() ? 'SOT' : currentDate;
+}
+async function renderTab(){
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active', b.dataset.tab===activeTab));
+  updateDateBar();
+  const view = document.getElementById('view');
+  view.innerHTML = '<div class="center-col"><div class="spinner"></div></div>';
+  const fn = TAB_RENDERERS[activeTab];
+  if(fn){ const html = await fn(); view.innerHTML = html; if(TAB_RENDERERS['_after_'+activeTab]) TAB_RENDERERS['_after_'+activeTab](); }
+}
+document.getElementById('bottomnav').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.navbtn');
+  if(!btn) return;
+  activeTab = btn.dataset.tab;
+  renderTab();
+});
+document.querySelector('header.topbar').addEventListener('click', (e)=>{
+  const btn = e.target.closest('[data-action]');
+  if(!btn) return;
+  if(btn.dataset.action==='date-prev'){ currentDate = shiftDate(currentDate,-1); renderTab(); }
+  if(btn.dataset.action==='date-next'){ currentDate = shiftDate(currentDate,1); renderTab(); }
+});
+
+/* ================= RING SVG HELPER ================= */
+function ringSvg(pct, colorClass){
+  const r = 40, c = 2*Math.PI*r;
+  const off = c - (Math.min(Math.max(pct,0),1)) * c;
+  return `<svg width="96" height="96" viewBox="0 0 96 96">
+    <circle cx="48" cy="48" r="${r}" fill="none" stroke="#1c2a3d" stroke-width="8"/>
+    <circle cx="48" cy="48" r="${r}" fill="none" stroke="url(#iceGrad)" stroke-width="8"
+      stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"
+      transform="rotate(-90 48 48)"/>
+    <defs><linearGradient id="iceGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6fd6ff"/><stop offset="100%" stop-color="#a9ecff"/>
+    </linearGradient></defs>
+  </svg>`;
+}
+
+/* ================= DASHBOARD ================= */
+TAB_RENDERERS.dashboard = async function(){
+  const ds = currentDate;
+  const day = await getDay(ds);
+  const food = await getFood(ds);
+  const todos = await getTodos();
+  const cfg = await getConfig();
+  const totals = mealTotals(food);
+  const pending = todos.filter(t=>!t.done).length;
+  const streak = await pornStreak(cfg);
+  const morningTotal = cfg.morningSteps.length;
+  const morningDone = cfg.morningSteps.filter(s=>day.morningLog[s.id]).length;
+  const morningPct = morningTotal ? morningDone/morningTotal : 0;
+  const habitsDone = cfg.habits.filter(h=>day.habitLog[h.id]).length;
+
+  return `
+    <div class="card card-row">
+      <div>
+        <div class="card-title">Streaku i Pastërtisë</div>
+        <div class="card-sub">Që nga ${displayDate(cfg.pornStart)}</div>
+        <div style="margin-top:10px;" class="tag ${day.porn.relapsed ? 'danger':'mint'}">${day.porn.relapsed ? 'Rrëshqitje sot' : 'Ditë e pastër'}</div>
+      </div>
+      <div class="ring-wrap">
+        ${ringSvg(Math.min(streak/30,1))}
+        <div class="ring-num"><span class="n streak-flame">${streak}</span><span class="l">Ditë</span></div>
+      </div>
+    </div>
+
+    <div class="section-title">Sot me Shifra</div>
+    <div class="grid2">
+      <div class="stat"><div class="num">${Math.round(totals.cal)}</div><div class="lbl">Kalori</div></div>
+      <div class="stat"><div class="num">${day.water}</div><div class="lbl">Gota Ujë</div></div>
+      <div class="stat"><div class="num">${morningDone}/${morningTotal||0}</div><div class="lbl">Rutina Mëngjesi</div></div>
+      <div class="stat"><div class="num">${pending}</div><div class="lbl">Detyra Mbetur</div></div>
+    </div>
+
+    <div class="section-title">Makro Sot</div>
+    <div class="card">
+      ${macroBar('Proteina', totals.protein, 150, '#5fe3ac')}
+      ${macroBar('Karbo', totals.carbs, 250, '#ffc266')}
+      ${macroBar('Yndyrna', totals.fat, 70, '#6fd6ff')}
+    </div>
+
+    <div class="section-title">Sesione Sot</div>
+    <div class="card">
+      <div class="hint">💪 Stërvitje: ${day.workout.sessions.length ? day.workout.sessions.map(s=>s.type).join(', ') : 'Ende asnjë sesion'}</div>
+      <div class="divider"></div>
+      <div class="hint">✅ Zakone të plotësuara: ${habitsDone}/${cfg.habits.length||0}</div>
+    </div>
+  `;
+};
+function macroBar(label, val, target, color){
+  const pct = Math.min(val/target,1)*100;
+  return `<div class="macro">
+    <div class="macro-top"><span>${label}</span><span>${Math.round(val)}g / ${target}g</span></div>
+    <div class="macro-track"><div class="macro-fill" style="width:${pct}%; background:${color};"></div></div>
+  </div>`;
+}
+
+/* ================= FOOD TAB ================= */
+const MEAL_META = {
+  breakfast: {label:'Mëngjes', icon:'🌅'},
+  lunch: {label:'Drekë', icon:'☀️'},
+  dinner: {label:'Darkë', icon:'🌙'},
+  snack: {label:'Snack', icon:'🍎'}
+};
+TAB_RENDERERS.food = async function(){
+  const ds = currentDate;
+  const food = await getFood(ds);
+  const totals = mealTotals(food);
+  let html = `
+    <div class="card">
+      <div class="card-row">
+        <div><div class="card-title">Total Ditor</div><div class="card-sub">${Math.round(totals.cal)} kcal</div></div>
+        <button class="btn btn-primary" data-action="food-add-generic">+ Shto Ushqim</button>
+      </div>
+      <div style="margin-top:14px;">
+        ${macroBar('Proteina', totals.protein, 150, '#5fe3ac')}
+        ${macroBar('Karbo', totals.carbs, 250, '#ffc266')}
+        ${macroBar('Yndyrna', totals.fat, 70, '#6fd6ff')}
+      </div>
+    </div>
+  `;
+  for(const meal of ['breakfast','lunch','dinner','snack']){
+    const items = food[meal];
+    const mealCal = items.reduce((s,i)=>s+(Number(i.calories)||0),0);
+    html += `<div class="section-title">${MEAL_META[meal].icon} ${MEAL_META[meal].label}
+      <span class="manage-link" data-action="food-add" data-meal="${meal}">+ Shto</span></div>`;
+    if(!items.length){
+      html += `<div class="empty-state">Asgjë e shtuar ende</div>`;
+    } else {
+      html += `<div class="card">`;
+      items.forEach(it=>{
+        html += `<div class="list-item">
+          <div style="flex:1;">
+            <div class="li-text">${escapeHtml(it.name)}</div>
+            <div class="li-sub">${Math.round(it.calories)} kcal · P ${Math.round(it.protein_g)}g · K ${Math.round(it.carbs_g)}g · Y ${Math.round(it.fat_g)}g</div>
+          </div>
+          <span class="li-del" data-action="food-del" data-meal="${meal}" data-id="${it.id}">✕</span>
+        </div>`;
+      });
+      html += `<div class="card-sub" style="text-align:right; margin-top:6px;">${Math.round(mealCal)} kcal total</div></div>`;
+    }
+  }
+  return html;
+};
+
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function mealPickerModal(onPick){
+  openModal(`
+    <div class="chip-row" id="mealPickChips">
+      ${Object.entries(MEAL_META).map(([k,v])=>`<div class="chip" data-meal="${k}" style="flex:1; text-align:center;">${v.icon} ${v.label}</div>`).join('')}
+    </div>
+  `, {title:'Për cilin vakt?', center:true});
+  document.getElementById('mealPickChips').addEventListener('click',(e)=>{
+    const chip = e.target.closest('.chip');
+    if(!chip) return;
+    closeModal();
+    onPick(chip.dataset.meal);
+  });
+}
+
+function foodAddModal(meal){
+  openModal(`
+    <div class="hint" style="margin-bottom:14px;">Shto në <b>${MEAL_META[meal].label}</b></div>
+    <input type="file" accept="image/*" capture="environment" id="foodPhotoInput" style="display:none;">
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <button class="btn btn-primary btn-block" id="foodPhotoBtn">📷 Skano me Foto</button>
+      <button class="btn btn-ghost btn-block" data-action="food-manual" data-meal="${meal}">✍️ Shto Manualisht</button>
+    </div>
+    <div id="foodAnalyzeZone" style="margin-top:14px;"></div>
+  `, {title:'Shto Ushqim'});
+  const input = document.getElementById('foodPhotoInput');
+  document.getElementById('foodPhotoBtn').addEventListener('click', ()=>input.click());
+  input.addEventListener('change', async ()=>{
+    const file = input.files[0];
+    if(!file) return;
+    const zone = document.getElementById('foodAnalyzeZone');
+    const previewUrl = URL.createObjectURL(file);
+    zone.innerHTML = `<img src="${previewUrl}" class="photo-preview"><div class="center-col"><div class="spinner"></div><div class="hint">Duke analizuar ushqimin...</div></div>`;
+    try{
+      const result = await analyzeFoodPhoto(file);
+      zone.innerHTML = `<img src="${previewUrl}" class="photo-preview">`;
+      renderFoodResultForm(zone, meal, result);
+    }catch(err){
+      zone.innerHTML = `<img src="${previewUrl}" class="photo-preview"><div class="hint" style="color:var(--danger); margin-bottom:10px;">Analiza dështoi. Provo përsëri ose shto manualisht.</div>`;
+      renderFoodResultForm(zone, meal, {name:'', calories:0, protein_g:0, carbs_g:0, fat_g:0});
+    }
+  });
+}
+
+function renderFoodResultForm(zone, meal, data){
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="field"><label>Emri i Ushqimit</label><input type="text" id="fName" value="${escapeHtml(data.name||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>Kalori</label><input type="number" id="fCal" value="${Math.round(data.calories)||0}"></div>
+      <div class="field"><label>Proteina (g)</label><input type="number" id="fProtein" value="${Math.round(data.protein_g)||0}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Karbo (g)</label><input type="number" id="fCarbs" value="${Math.round(data.carbs_g)||0}"></div>
+      <div class="field"><label>Yndyrna (g)</label><input type="number" id="fFat" value="${Math.round(data.fat_g)||0}"></div>
+    </div>
+    <button class="btn btn-primary btn-block" id="fSaveBtn">Ruaj në ${MEAL_META[meal].label}</button>
+  `;
+  zone.appendChild(wrap);
+  wrap.querySelector('#fSaveBtn').addEventListener('click', async ()=>{
+    const item = {
+      id: uid(),
+      name: wrap.querySelector('#fName').value.trim() || 'Ushqim',
+      calories: Number(wrap.querySelector('#fCal').value)||0,
+      protein_g: Number(wrap.querySelector('#fProtein').value)||0,
+      carbs_g: Number(wrap.querySelector('#fCarbs').value)||0,
+      fat_g: Number(wrap.querySelector('#fFat').value)||0,
+      time: new Date().toTimeString().slice(0,5)
+    };
+    const food = await getFood(currentDate);
+    food[meal].push(item);
+    await saveFood(currentDate, food);
+    closeModal();
+    if(activeTab==='food') renderTab();
+  });
+}
+
+const FOOD_PROMPT = `Analizo këtë foto ushqimi. Përgjigju VETËM me një objekt JSON të vlefshëm, pa markdown, pa shpjegime shtesë, saktësisht sipas kësaj skeme:
+{"name": "emri i shkurtër i ushqimit në shqip", "calories": numër, "protein_g": numër, "carbs_g": numër, "fat_g": numër, "confidence": "high" ose "medium" ose "low"}
+Vlerëso madhësinë e porcionit ashtu siç shfaqet realisht në foto. Nëse ka disa artikuj ushqimi, kombinoji të gjitha në një total të vlerësuar për të gjithë pjatën. Përgjigju vetëm me objektin JSON, asgjë tjetër.`;
+
+function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = ()=>res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+async function analyzeFoodPhoto(file){
+  const base64 = await fileToBase64(file);
+  const mediaType = file.type || 'image/jpeg';
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model:'claude-sonnet-4-6',
+      max_tokens:1000,
+      messages:[{
+        role:'user',
+        content:[
+          {type:'image', source:{type:'base64', media_type:mediaType, data:base64}},
+          {type:'text', text: FOOD_PROMPT}
+        ]
+      }]
+    })
+  });
+  const data = await resp.json();
+  const textBlock = (data.content||[]).find(b=>b.type==='text');
+  if(!textBlock) throw new Error('no text');
+  const clean = textBlock.text.replace(/```json|```/g,'').trim();
+  return JSON.parse(clean);
+}
+
+/* ================= BODY TAB (water, sleep, workout, looksmaxing) ================= */
+const WORKOUT_TYPES = ['Kalisteni','Arte Marciale','Kardio','Forcë','Tjetër'];
+TAB_RENDERERS.body = async function(){
+  const ds = currentDate;
+  const day = await getDay(ds);
+  const cfg = await getConfig();
+
+  let bedWakeHint = '';
+  if(day.sleep.bed && day.sleep.wake){
+    bedWakeHint = sleepDuration(day.sleep.bed, day.sleep.wake);
+  }
+
+  let html = `
+    <div class="section-title">💧 Uji</div>
+    <div class="card">
+      <div class="card-row">
+        <div><div class="card-title">${day.water} gota</div><div class="card-sub">~${(day.water*0.25).toFixed(2)} L sot</div></div>
+        <div style="display:flex; gap:8px;">
+          <button class="icon-btn" data-action="water-minus">−</button>
+          <button class="icon-btn" data-action="water-plus">+</button>
+        </div>
+      </div>
+      <div class="glass-row">
+        ${Array.from({length:Math.max(day.water,8)}).map((_,i)=>`<div class="glass ${i<day.water?'filled':''}" data-action="water-set" data-n="${i+1}"></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="section-title">😴 Gjumi</div>
+    <div class="card">
+      <div class="field-row">
+        <div class="field"><label>Në shtrat</label><input type="time" id="sleepBed" value="${day.sleep.bed}"></div>
+        <div class="field"><label>U zgjova</label><input type="time" id="sleepWake" value="${day.sleep.wake}"></div>
+      </div>
+      <div class="field"><label>Shënime (cilësia, ëndrra, etj.)</label><textarea id="sleepNotes" placeholder="Si e ke fjetur?">${escapeHtml(day.sleep.notes)}</textarea></div>
+      ${bedWakeHint ? `<div class="tag mint">${bedWakeHint} gjumë</div>` : ''}
+      <button class="btn btn-primary btn-block" style="margin-top:12px;" data-action="sleep-save">Ruaj Gjumin</button>
+    </div>
+
+    <div class="section-title">💪 Stërvitje</div>
+    <div class="card">
+      <div class="chip-row" id="workoutTypeChips">
+        ${WORKOUT_TYPES.map(t=>`<div class="chip" data-type="${t}">${t}</div>`).join('')}
+      </div>
+      <div class="field-row" style="margin-top:12px;">
+        <div class="field"><label>Kohëzgjatja (min)</label><input type="number" id="woDuration" placeholder="45"></div>
+        <div class="field"><label>Shënime</label><input type="text" id="woNotes" placeholder="p.sh. 5x10 pull-ups"></div>
+      </div>
+      <button class="btn btn-primary btn-block" data-action="workout-add">+ Shto Sesion</button>
+      ${day.workout.sessions.length ? day.workout.sessions.map(s=>`
+        <div class="list-item">
+          <div style="flex:1;"><div class="li-text">${s.type}${s.duration?` · ${s.duration} min`:''}</div>${s.notes?`<div class="li-sub">${escapeHtml(s.notes)}</div>`:''}</div>
+          <span class="li-del" data-action="workout-del" data-id="${s.id}">✕</span>
+        </div>`).join('') : `<div class="empty-state" style="margin-top:10px;">Ende asnjë sesion sot</div>`}
+    </div>
+
+    <div class="section-title">🧊 Looksmaxing <span class="manage-link" data-action="manage-looks">Menaxho</span></div>
+    <div class="card">
+      ${cfg.looksSteps.length ? cfg.looksSteps.map(s=>`
+        <div class="list-item">
+          <div class="check ${day.looksLog[s.id]?'on':''}" data-action="looks-toggle" data-id="${s.id}">${day.looksLog[s.id]?'✓':''}</div>
+          <div class="li-text ${day.looksLog[s.id]?'done':''}">${escapeHtml(s.name)}</div>
+        </div>`).join('') : `<div class="empty-state">Shto hapat e tu të looksmaxing-ut (lëkurë, qëndrim, mewing, flokë...)</div>`}
+    </div>
+  `;
+  return html;
+};
+
+function sleepDuration(bed, wake){
+  const [bh,bm] = bed.split(':').map(Number);
+  const [wh,wm] = wake.split(':').map(Number);
+  let mins = (wh*60+wm) - (bh*60+bm);
+  if(mins <= 0) mins += 24*60;
+  const h = Math.floor(mins/60), m = mins%60;
+  return `${h}orë ${m}min`;
+}
+
+/* ================= DISCIPLINE TAB (habits, urge tracker, morning routine, todo) ================= */
+TAB_RENDERERS.discipline = async function(){
+  const ds = currentDate;
+  const day = await getDay(ds);
+  const cfg = await getConfig();
+  const todos = await getTodos();
+  const streak = await pornStreak(cfg);
+  const isToday = ds === todayStr();
+
+  let html = `
+    <div class="section-title">🧊 Streaku (Urge Tracker)</div>
+    <div class="card">
+      <div class="card-row">
+        <div>
+          <div class="card-title streak-flame" style="font-family:'Oswald',sans-serif; font-size:24px;">${streak} ditë</div>
+          <div class="card-sub">${day.porn.relapsed ? 'U shënua rrëshqitje sot' : 'Streaku vazhdon'}</div>
+        </div>
+        ${isToday ? `<button class="btn btn-danger" data-action="relapse-mark">Rrëshqitje</button>` : ''}
+      </div>
+      ${day.porn.relapsed ? `<div class="hint" style="margin-top:10px;">${escapeHtml(day.porn.note||'')}</div>` : ''}
+    </div>
+
+    <div class="section-title">✅ Zakonet <span class="manage-link" data-action="manage-habits">Menaxho</span></div>
+    <div class="card">
+      ${cfg.habits.length ? cfg.habits.map(h=>`
+        <div class="list-item">
+          <div class="check ${day.habitLog[h.id]?'on':''}" data-action="habit-toggle" data-id="${h.id}">${day.habitLog[h.id]?'✓':''}</div>
+          <div class="li-text ${day.habitLog[h.id]?'done':''}">${escapeHtml(h.name)}</div>
+        </div>`).join('') : `<div class="empty-state">Shto zakonet e tua ditore (leximi, meditimi, etj.)</div>`}
+    </div>
+
+    <div class="section-title">🌅 Rutina e Mëngjesit <span class="manage-link" data-action="manage-morning">Menaxho</span></div>
+    <div class="card">
+      ${cfg.morningSteps.length ? cfg.morningSteps.map(s=>`
+        <div class="list-item">
+          <div class="check ${day.morningLog[s.id]?'on':''}" data-action="morning-toggle" data-id="${s.id}">${day.morningLog[s.id]?'✓':''}</div>
+          <div class="li-text ${day.morningLog[s.id]?'done':''}">${escapeHtml(s.name)}</div>
+        </div>`).join('') : `<div class="empty-state">Krijo rutinën tënde të mëngjesit hap pas hapi</div>`}
+    </div>
+
+    <div class="section-title">📋 To-Do Lista</div>
+    <div class="card">
+      <div class="field-row" style="align-items:flex-end;">
+        <div class="field" style="margin-bottom:0;"><input type="text" id="newTodoInput" placeholder="Detyrë e re..."></div>
+        <button class="btn btn-primary" data-action="todo-add" style="margin-bottom:0;">+</button>
+      </div>
+    </div>
+    <div class="card">
+      ${todos.length ? todos.slice().sort((a,b)=>a.done-b.done).map(t=>`
+        <div class="list-item">
+          <div class="check ${t.done?'on':''}" data-action="todo-toggle" data-id="${t.id}">${t.done?'✓':''}</div>
+          <div class="li-text ${t.done?'done':''}">${escapeHtml(t.text)}</div>
+          <span class="li-del" data-action="todo-del" data-id="${t.id}">✕</span>
+        </div>`).join('') : `<div class="empty-state">Lista jote është bosh — shto diçka!</div>`}
+    </div>
+  `;
+  return html;
+};
+
+function relapseModal(){
+  openModal(`
+    <div class="hint" style="margin-bottom:12px;">Streaku fillon nga zero, por çdo rënie është të mësuarit — jo dështim. Shëno shkurt shkakun nëse do.</div>
+    <div class="field"><textarea id="relapseNote" placeholder="Shënim (opsionale)..."></textarea></div>
+    <button class="btn btn-danger btn-block" id="relapseConfirm">Konfirmo Rrëshqitjen</button>
+  `, {title:'Shëno Rrëshqitje', center:true});
+  document.getElementById('relapseConfirm').addEventListener('click', async ()=>{
+    const note = document.getElementById('relapseNote').value.trim();
+    const day = await getDay(currentDate);
+    day.porn.relapsed = true;
+    day.porn.note = note;
+    await saveDay(currentDate, day);
+    const cfg = await getConfig();
+    cfg.pornStart = todayStr();
+    await saveConfig(cfg);
+    closeModal();
+    renderTab();
+  });
+}
+
+function manageListModal(title, key, cfg, placeholder){
+  openModal(`
+    <div id="manageList">
+      ${cfg[key].map(it=>`
+        <div class="list-item">
+          <div class="li-text">${escapeHtml(it.name)}</div>
+          <span class="li-del" data-action="manage-del" data-key="${key}" data-id="${it.id}">✕</span>
+        </div>`).join('') || '<div class="empty-state">Ende bosh</div>'}
+    </div>
+    <div class="field-row" style="margin-top:14px; align-items:flex-end;">
+      <div class="field" style="margin-bottom:0;"><input type="text" id="manageInput" placeholder="${placeholder}"></div>
+      <button class="btn btn-primary" id="manageAddBtn" style="margin-bottom:0;">+</button>
+    </div>
+  `, {title});
+  document.getElementById('manageAddBtn').addEventListener('click', async ()=>{
+    const val = document.getElementById('manageInput').value.trim();
+    if(!val) return;
+    const c = await getConfig();
+    c[key].push({id:uid(), name:val});
+    await saveConfig(c);
+    closeModal();
+    renderTab();
+  });
+  document.getElementById('manageList').addEventListener('click', async (e)=>{
+    const btn = e.target.closest('[data-action="manage-del"]');
+    if(!btn) return;
+    const c = await getConfig();
+    c[btn.dataset.key] = c[btn.dataset.key].filter(x=>x.id!==btn.dataset.id);
+    await saveConfig(c);
+    closeModal();
+    renderTab();
+  });
+}
+
+/* ================= TOOLS TAB (reminders + timer) ================= */
+TAB_RENDERERS.tools = async function(){
+  const cfg = await getConfig();
+  let html = `
+    <div class="section-title">⏱️ Timer</div>
+    <div class="card">
+      <div class="chip-row">
+        <div class="chip" data-action="timer-preset" data-sec="60">1 min</div>
+        <div class="chip" data-action="timer-preset" data-sec="180">3 min</div>
+        <div class="chip" data-action="timer-preset" data-sec="300">5 min</div>
+        <div class="chip" data-action="timer-preset" data-sec="1500">25 min</div>
+      </div>
+      <div class="field-row" style="margin-top:12px;">
+        <div class="field"><label>Minuta</label><input type="number" id="timerMin" value="0"></div>
+        <div class="field"><label>Sekonda</label><input type="number" id="timerSec" value="30"></div>
+      </div>
+      <div class="timer-display" id="timerDisplay">00:30</div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-primary btn-block" data-action="timer-start">▶ Nis</button>
+        <button class="btn btn-ghost" data-action="timer-pause">⏸</button>
+        <button class="btn btn-ghost" data-action="timer-reset">↺</button>
+      </div>
+    </div>
+
+    <div class="section-title">🔔 Kujtesat <span class="manage-link" data-action="reminder-add">+ Shto</span></div>
+    <div class="card">
+      ${cfg.reminders.length ? cfg.reminders.map(r=>`
+        <div class="list-item">
+          <div style="flex:1;"><div class="li-text">${escapeHtml(r.text)}</div><div class="li-sub">${r.time}</div></div>
+          <span class="li-del" data-action="reminder-del" data-id="${r.id}">✕</span>
+        </div>`).join('') : `<div class="empty-state">Shto një kujtesë me orë të caktuar. Vlen sa app-i qëndron i hapur në shfletues.</div>`}
+    </div>
+  `;
+  return html;
+};
+
+/* --- timer engine --- */
+let timerInterval = null;
+let timerRemaining = 30;
+function updateTimerDisplay(){
+  const el = document.getElementById('timerDisplay');
+  if(!el) return;
+  const m = String(Math.floor(timerRemaining/60)).padStart(2,'0');
+  const s = String(timerRemaining%60).padStart(2,'0');
+  el.textContent = `${m}:${s}`;
+}
+function beep(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = 880; o.type='sine';
+    g.gain.setValueAtTime(.2, ctx.currentTime);
+    o.start(); o.stop(ctx.currentTime + .35);
+  }catch(e){}
+}
+function timerStart(){
+  if(timerInterval) return;
+  timerInterval = setInterval(()=>{
+    timerRemaining--;
+    if(timerRemaining <= 0){
+      timerRemaining = 0;
+      updateTimerDisplay();
+      clearInterval(timerInterval); timerInterval=null;
+      beep();
+      return;
+    }
+    updateTimerDisplay();
+  },1000);
+}
+function timerPause(){ clearInterval(timerInterval); timerInterval=null; }
+function timerReset(){
+  timerPause();
+  const min = Number(document.getElementById('timerMin')?.value||0);
+  const sec = Number(document.getElementById('timerSec')?.value||30);
+  timerRemaining = min*60+sec;
+  updateTimerDisplay();
+}
+function reminderAddModal(){
+  openModal(`
+    <div class="field"><label>Teksti</label><input type="text" id="remText" placeholder="p.sh. Merr vitaminat"></div>
+    <div class="field"><label>Ora</label><input type="time" id="remTime" value="08:00"></div>
+    <button class="btn btn-primary btn-block" id="remSave">Ruaj Kujtesën</button>
+  `, {title:'Kujtesë e Re', center:true});
+  document.getElementById('remSave').addEventListener('click', async ()=>{
+    const text = document.getElementById('remText').value.trim();
+    const time = document.getElementById('remTime').value;
+    if(!text || !time) return;
+    const c = await getConfig();
+    c.reminders.push({id:uid(), text, time, firedOn:''});
+    await saveConfig(c);
+    closeModal();
+    renderTab();
+    if('Notification' in window && Notification.permission==='default') Notification.requestPermission();
+  });
+}
+setInterval(async ()=>{
+  if(!_cfgCache || !_cfgCache.reminders || !_cfgCache.reminders.length) return;
+  const now = new Date();
+  const hhmm = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  const today = todayStr();
+  let changed = false;
+  for(const r of _cfgCache.reminders){
+    if(r.time === hhmm && r.firedOn !== today){
+      r.firedOn = today;
+      changed = true;
+      if('Notification' in window && Notification.permission==='granted'){
+        new Notification('WINTER ARC', {body:r.text});
+      } else {
+        beep();
+      }
+    }
+  }
+  if(changed) await saveConfig(_cfgCache);
+},20000);
+
+/* ================= CENTRAL EVENT DELEGATION ================= */
+document.getElementById('view').addEventListener('click', async (e)=>{
+  const btn = e.target.closest('[data-action]');
+  if(!btn) return;
+  const action = btn.dataset.action;
+  const ds = currentDate;
+
+  if(action==='water-plus'){
+    const day = await getDay(ds); day.water++; await saveDay(ds, day); renderTab(); return;
+  }
+  if(action==='water-minus'){
+    const day = await getDay(ds); day.water = Math.max(0, day.water-1); await saveDay(ds, day); renderTab(); return;
+  }
+  if(action==='water-set'){
+    const day = await getDay(ds); day.water = Number(btn.dataset.n); await saveDay(ds, day); renderTab(); return;
+  }
+  if(action==='sleep-save'){
+    const day = await getDay(ds);
+    day.sleep.bed = document.getElementById('sleepBed').value;
+    day.sleep.wake = document.getElementById('sleepWake').value;
+    day.sleep.notes = document.getElementById('sleepNotes').value;
+    await saveDay(ds, day); renderTab(); return;
+  }
+  if(action==='workout-add'){
+    const activeChip = document.querySelector('#workoutTypeChips .chip.on');
+    const type = activeChip ? activeChip.dataset.type : WORKOUT_TYPES[0];
+    const duration = document.getElementById('woDuration').value;
+    const notes = document.getElementById('woNotes').value;
+    const day = await getDay(ds);
+    day.workout.sessions.push({id:uid(), type, duration, notes});
+    await saveDay(ds, day); renderTab(); return;
+  }
+  if(action==='workout-del'){
+    const day = await getDay(ds);
+    day.workout.sessions = day.workout.sessions.filter(s=>s.id!==btn.dataset.id);
+    await saveDay(ds, day); renderTab(); return;
+  }
+  if(action==='looks-toggle'){
+    const day = await getDay(ds); day.looksLog[btn.dataset.id] = !day.looksLog[btn.dataset.id];
+    await saveDay(ds, day); renderTab(); return;
+  }
+  if(action==='manage-looks'){ const c=await getConfig(); manageListModal('Hapat e Looksmaxing', 'looksSteps', c, 'p.sh. Skincare AM'); return; }
+  if(action==='manage-habits'){ const c=await getConfig(); manageListModal('Zakonet e Tua', 'habits', c, 'p.sh. Lexo 10 faqe'); return; }
+  if(action==='manage-morning'){ const c=await getConfig(); manageListModal('Rutina e Mëngjesit', 'morningSteps', c, 'p.sh. Bëj shtratin'); return; }
+  if(action==='habit-toggle'){
+    const day = await getDay(ds); day.habitLog[btn.dataset.id] = !day.habitLog[btn.dataset.id];
+    await saveDay(ds, day); renderTab(); return;
+  }
+  if(action==='morning-toggle'){
+    const day = await getDay(ds); day.morningLog[btn.dataset.id] = !day.morningLog[btn.dataset.id];
+    await saveDay(ds, day); renderTab(); return;
+  }
+  if(action==='relapse-mark'){ relapseModal(); return; }
+  if(action==='todo-add'){
+    const input = document.getElementById('newTodoInput');
+    const val = input.value.trim();
+    if(!val) return;
+    const todos = await getTodos();
+    todos.push({id:uid(), text:val, done:false});
+    await saveTodos(todos); renderTab(); return;
+  }
+  if(action==='todo-toggle'){
+    const todos = await getTodos();
+    const t = todos.find(x=>x.id===btn.dataset.id);
+    if(t) t.done = !t.done;
+    await saveTodos(todos); renderTab(); return;
+  }
+  if(action==='todo-del'){
+    let todos = await getTodos();
+    todos = todos.filter(x=>x.id!==btn.dataset.id);
+    await saveTodos(todos); renderTab(); return;
+  }
+  if(action==='food-add-generic'){ mealPickerModal((meal)=>foodAddModal(meal)); return; }
+  if(action==='food-add'){ foodAddModal(btn.dataset.meal); return; }
+  if(action==='food-manual'){
+    const zone = document.getElementById('foodAnalyzeZone');
+    zone.innerHTML='';
+    renderFoodResultForm(zone, btn.dataset.meal, {name:'', calories:0, protein_g:0, carbs_g:0, fat_g:0});
+    return;
+  }
+  if(action==='food-del'){
+    const food = await getFood(ds);
+    food[btn.dataset.meal] = food[btn.dataset.meal].filter(i=>i.id!==btn.dataset.id);
+    await saveFood(ds, food); renderTab(); return;
+  }
+  if(action==='timer-start'){ timerStart(); return; }
+  if(action==='timer-pause'){ timerPause(); return; }
+  if(action==='timer-reset'){ timerReset(); return; }
+  if(action==='timer-preset'){
+    timerPause();
+    timerRemaining = Number(btn.dataset.sec);
+    const mEl = document.getElementById('timerMin'), sEl = document.getElementById('timerSec');
+    if(mEl) mEl.value = Math.floor(timerRemaining/60);
+    if(sEl) sEl.value = timerRemaining%60;
+    updateTimerDisplay(); return;
+  }
+  if(action==='reminder-add'){ reminderAddModal(); return; }
+  if(action==='reminder-del'){
+    const c = await getConfig();
+    c.reminders = c.reminders.filter(r=>r.id!==btn.dataset.id);
+    await saveConfig(c); renderTab(); return;
+  }
+});
+
+document.getElementById('view').addEventListener('change', (e)=>{
+  if((e.target.id==='timerMin' || e.target.id==='timerSec') && !timerInterval){
+    timerReset();
+  }
+});
+
+/* workout type chip selection (delegated, toggles single-select) */
+document.getElementById('view').addEventListener('click', (e)=>{
+  const chip = e.target.closest('#workoutTypeChips .chip');
+  if(!chip) return;
+  document.querySelectorAll('#workoutTypeChips .chip').forEach(c=>c.classList.remove('on'));
+  chip.classList.add('on');
+});
+
+/* input changes that should persist immediately (todo enter key) */
+document.getElementById('view').addEventListener('keydown', (e)=>{
+  if(e.key==='Enter' && e.target.id==='newTodoInput'){
+    e.preventDefault();
+    document.querySelector('[data-action="todo-add"]')?.click();
+  }
+});
+
+/* ================= INIT ================= */
+(async function init(){
+  await getConfig();
+  updateTimerDisplay();
+  await renderTab();
+})();
+
+/* ================= PWA INSTALL SUPPORT ================= */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
